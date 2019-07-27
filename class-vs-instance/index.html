@@ -1,0 +1,109 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="ie=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta name="generator" content="Gatsby 2.13.34"/><link as="script" rel="preload" href="/component---src-templates-blog-post-js-c3908f3058992ad04b93.js"/><link as="script" rel="preload" href="/app-228241ff8ff730f6436a.js"/><link as="script" rel="preload" href="/webpack-runtime-f0e7ede3c4e5967ed1d2.js"/><link as="fetch" rel="preload" href="/page-data/class-vs-instance/page-data.json" crossorigin="use-credentials"/></head><body><noscript id="gatsby-noscript">This app works best with JavaScript enabled.</noscript><div id="___gatsby"><div style="outline:none" tabindex="-1" role="group" id="gatsby-focus-wrapper"><div><h1>Class vs. Instance</h1><div class="blogpost" style="font-family:avenir"><p>In order to strengthen my understanding of this topic, I have read quite a few blog posts and watched many a tutorial (thank you, internet!). I've also written some code to showcase my knowledge of the concept of class vs. instance methods and variables which I will share here. Let's go!</p>
+<p>When trying to come up with a coding concept, I decided to create a Family class that would allow me to create new families, give them family names and members, and add them to a community of Families. My code starts out by defining the Family class this way:</p>
+<pre><code>class Family
+
+attr_accessor :name, :location, :mama, :papa, :kids
+</code></pre>
+<p>For all intents and purposes, these are the attributes of an instance of a Family: name, location, mama, papa, and kids. By the way, that sentence opens up the first concept to understand regarding classes and instances. Each family that gets created is an instance of the Family class. Each time a new family is created, this code is executed:</p>
+<pre><code>@@community = []
+@@family_count = 0
+
+def initialize(name)
+  @name = name
+    @members = []
+  @@family_count += 1
+  @@community &#x3C;&#x3C; name
+end
+</code></pre>
+<p>So when I enter,</p>
+<pre><code>grebnovs = Family.new("Grebnov")
+</code></pre>
+<p>a new instance of the Family class is returned, which looks like this:</p>
+<pre><code>#&#x3C;Family:0x000055b3c0b52df8 @name="Grebnov", @members=[]>
+</code></pre>
+<p>This is an instance of the Family class, complete with the name and empty members array that it was initialized with. By initializing this instance of the Family class, I've also increased the family_count by 1 and added the family name to my community of Families.</p>
+<p>Now that we have one instance of our Family class, we can add members. This is done by entering these lines:</p>
+<pre><code>grebnovs.add_member("Arseniy")
+grebnovs.add_member("Brittany")
+grebnovs.add_member("Mila")
+grebnovs.add_member("Damir")
+</code></pre>
+<p>which enacts the following code:</p>
+<pre><code>def add_member(member_name)
+  @members &#x3C;&#x3C; member_name
+end
+</code></pre>
+<p>The method above is an instance method because we are adding a member to an instance of the Family class (this one: #&#x3C;Family:0x000055b3c0b52df8 @name="Grebnov", @members=[]>). Each time a member_name is added, that string is shoveled into the @members instance variable which is set equal to an empty array upon initialization. Each instance of Family should keep track of its own members, which is why the @members variable is an instance variable and not a class variable. Through trial and error I came to understand that if it were a class variable defined as an empty array before initialization, i.e. @@members = [], it would hold the members of all the instances of the Family class instead of those from a specific family.</p>
+<p>Now that we've added members to our family, my code has the functionality to find a member of the family in case, let's say, one of the kids were to get lost or one of the parents were needed. This capability is encapsulated within this instance method:</p>
+<pre><code>def find(member_name)
+  if @members.include?(member_name)
+    "Here's #{member_name}!"
+  else
+    "Keep looking!"
+  end
+end
+</code></pre>
+<p>So, when we enter</p>
+<pre><code>grebnovs.find("Mila")
+</code></pre>
+<p>we are returned</p>
+<pre><code>"Here's Mila!"
+</code></pre>
+<h1>Find is an instance method because, again, we are looking through an instance of the Family class for one of its members.</h1>
+<p>Now we can also create additional instances of the family class. Each time a new family is created, it gets a name and an empty members array. By creating additional instances of Family, our @@family_count variable increases by 1 and the family name is added to our @@community array. If we want to see how many families have been created, we enlist the following class method:</p>
+<pre><code>def self.count
+  @@family_count
+end
+</code></pre>
+<p>and if we want to search our community for a specific family name, we can type into the terminal:</p>
+<pre><code>Family.find("Smith")
+</code></pre>
+<p>and get the message:</p>
+<pre><code>"Pleased to meet you! We're the Smith's"
+</code></pre>
+<p>A simple bit of code but a really valuable exercise for me to understand this concept better. Use an instance variable and method when operating on an instance of the class you've created, and use a class variable and method when you need to operate on the entire class itself, as in the case of a find or count method.</p>
+<p>I'm so relieved to have gone through this additional research in order to better grasp the concept of class vs. instance variables and methods. You can see my code in its entirety below. Thank you for reading!</p>
+<pre><code>class Family
+
+attr_accessor :name, :location, :mama, :papa, :kids
+
+@@community = []
+@@family_count = 0
+
+def initialize(name)
+  @name = name
+  @members = []
+  @@family_count += 1
+  @@community &#x3C;&#x3C; name
+end
+
+def add_member(member_name)
+  @members &#x3C;&#x3C; member_name
+end
+
+def members
+  @members
+end
+
+def find(member_name)
+  if @members.include?(member_name)
+    "Here's #{member_name}!"
+  else
+    "Keep looking!"
+  end
+end
+
+def self.count
+  @@family_count
+end
+
+def self.find(family_name)
+  if @@community.include?(family_name)
+    "Pleased to meet you! We're the #{family_name}'s"
+  else
+    "Looks like the #{family_name}'s haven't joined the community yet."
+  end
+end
+
+end
+</code></pre></div><div style="margin-bottom:1rem;font-family:avenir"><a href="/sinatra-does-know-this-ditty">Next</a></div><div style="font-family:avenir"><a href="/my-cli-data-gem-project">Prev</a></div></div></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/class-vs-instance";window.webpackCompilationHash="2f722c1f66d8eb1228dd";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"app":["/app-228241ff8ff730f6436a.js"],"component---src-templates-all-tags-index-js":["/component---src-templates-all-tags-index-js-cc89c025fc7f4b916cde.js"],"component---src-templates-single-tag-index-js":["/component---src-templates-single-tag-index-js-968761159b475aed954b.js"],"component---src-templates-blog-post-js":["/component---src-templates-blog-post-js-c3908f3058992ad04b93.js"],"component---src-pages-index-js":["/component---src-pages-index-js-eeb564a843ba0398d50b.js"]};/*]]>*/</script><script src="/webpack-runtime-f0e7ede3c4e5967ed1d2.js" async=""></script><script src="/app-228241ff8ff730f6436a.js" async=""></script><script src="/component---src-templates-blog-post-js-c3908f3058992ad04b93.js" async=""></script></body></html>

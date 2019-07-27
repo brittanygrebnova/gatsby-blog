@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="ie=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta name="generator" content="Gatsby 2.13.34"/><link as="script" rel="preload" href="/component---src-templates-blog-post-js-c3908f3058992ad04b93.js"/><link as="script" rel="preload" href="/app-228241ff8ff730f6436a.js"/><link as="script" rel="preload" href="/webpack-runtime-f0e7ede3c4e5967ed1d2.js"/><link as="fetch" rel="preload" href="/page-data/music-library-cli/page-data.json" crossorigin="use-credentials"/></head><body><noscript id="gatsby-noscript">This app works best with JavaScript enabled.</noscript><div id="___gatsby"><div style="outline:none" tabindex="-1" role="group" id="gatsby-focus-wrapper"><div><h1>Music Library CLI</h1><div class="blogpost" style="font-family:avenir"><p>It came. It saw. It conquered my entire life for a whole week.</p>
+<p>The Music Library CLI was the first of the final projects for Object Oriented Ruby. To say that it was challenging is an understatement; it truly tested me on all the knowledge I had gained in the preceding lessons. In this blog post, I would like to iterate over ; ) the final method that brought everything together - #play_song.</p>
+<p>The first line:</p>
+<pre><code>def play_song
+  puts "Which song number would you like to play?"
+</code></pre>
+<p>The CLI asks the user which song they would like to play from the imported library, a simple puts statement. The CLI then 'gets' the user's response in the next line:</p>
+<pre><code>user = gets.strip
+</code></pre>
+<p>Then the program checks to make sure that the number entered by the user is a valid number corresponding to one of the song options in the music library. This is accomplished by the following code:</p>
+<pre><code>if user.to_i.between?(1, Song.all.length)
+</code></pre>
+<p>Song.all.length is the number of items in the Song.all array. If the number entered is valid, the CLI then matches the number entered with the corresponding item in the Song.all array through this line of code:</p>
+<pre><code>song = Song.sorted[user.to_i - 1]
+</code></pre>
+<p>The song variable is assigned to the value of the sorted class method, which looks like this:</p>
+<pre><code>def sorted
+  self.all.uniq.sort_by {|s| s.name}
+end
+</code></pre>
+<p>The return value of this method is a uniqe array of items listed alphabetically. In the case of Song.sorted, it is an array of songs listed in alphabetical order. So calling Song.sorted[user.to_i - 1] takes the user's input, subtracts 1 from the number in order to correspond to the array items that start with a 0 index, and chooses the song at that index from the Song.all array. The next line:</p>
+<pre><code>puts "Playing #{song.name} by #{song.artist.name}"
+</code></pre>
+<p>Here, the program uses string interpolation to return the .name and .artist.name of the matching song item in the Song.all array.</p>
+<p>It was interesting to incorporate the use of modules in this lab, which was a concept recently introduced in the course. I really like the sleekness of having a single file with a body of methods that can be applied to each class.</p>
+<p>Here's the final #play_song method:</p>
+<pre><code>def play_song
+  puts "Which song number would you like to play?"
+  user = gets.strip
+    if user.to_i.between?(1, Song.all.length)
+      song = Song.sorted[user.to_i - 1]
+      puts "Playing #{song.name} by #{song.artist.name}"
+    end
+end
+</code></pre>
+<p>Thank you for reading!</p></div><div style="margin-bottom:1rem;font-family:avenir"><a href="/my-cli-data-gem-project">Next</a></div><div style="font-family:avenir"><a href="/object-orientation-finally-understanding-reader-writer">Prev</a></div></div></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/music-library-cli";window.webpackCompilationHash="2f722c1f66d8eb1228dd";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"app":["/app-228241ff8ff730f6436a.js"],"component---src-templates-all-tags-index-js":["/component---src-templates-all-tags-index-js-cc89c025fc7f4b916cde.js"],"component---src-templates-single-tag-index-js":["/component---src-templates-single-tag-index-js-968761159b475aed954b.js"],"component---src-templates-blog-post-js":["/component---src-templates-blog-post-js-c3908f3058992ad04b93.js"],"component---src-pages-index-js":["/component---src-pages-index-js-eeb564a843ba0398d50b.js"]};/*]]>*/</script><script src="/webpack-runtime-f0e7ede3c4e5967ed1d2.js" async=""></script><script src="/app-228241ff8ff730f6436a.js" async=""></script><script src="/component---src-templates-blog-post-js-c3908f3058992ad04b93.js" async=""></script></body></html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="ie=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta name="generator" content="Gatsby 2.13.34"/><link as="script" rel="preload" href="/component---src-templates-blog-post-js-c3908f3058992ad04b93.js"/><link as="script" rel="preload" href="/app-228241ff8ff730f6436a.js"/><link as="script" rel="preload" href="/webpack-runtime-f0e7ede3c4e5967ed1d2.js"/><link as="fetch" rel="preload" href="/page-data/deliver-me-my-rails-portfolio-project/page-data.json" crossorigin="use-credentials"/></head><body><noscript id="gatsby-noscript">This app works best with JavaScript enabled.</noscript><div id="___gatsby"><div style="outline:none" tabindex="-1" role="group" id="gatsby-focus-wrapper"><div><h1>DeliverMe: My Rails Portfolio Project</h1><div class="blogpost" style="font-family:avenir"><p>And a testimony of the joy and sorrow of using Devise for user authentication.</p>
+<p>I set out to recreate my very own (simplified) version of Postmates for the Rails Portfolio Project. The app is called DeliverMe and it 'delivers' the user an experience of choosing a vendor, placing an order, and having that order delivered.</p>
+<p>I set up my models like this:</p>
+<pre><code>class User &#x3C; ApplicationRecord
+  has_many :orders
+  has_many :item_orders
+  has_many :items, :through => :orders
+end
+</code></pre>
+<pre><code>class Vendor &#x3C; ApplicationRecord
+  has_many :items
+  has_many :orders
+end
+</code></pre>
+<pre><code>class Order &#x3C; ApplicationRecord
+  belongs_to :vendor
+  belongs_to :user
+  has_many :item_orders
+  has_many :items, :through => :item_orders
+end
+</code></pre>
+<pre><code>class Item &#x3C; ApplicationRecord
+  belongs_to :vendor
+  has_many :item_orders
+  has_many :orders, :through => :item_orders
+end
+</code></pre>
+<p>One of the lessons I learned about ActiveRecord relationships during this project was the importance of correctly naming your join table, and also making sure to state the has<em>many relationship before has</em>many<em>through. In my case, I had originally titled my join table 'items</em>orders', had trouble getting the relationship working, then found a lesson that explained the naming convention of :singlemodelname<em>pluralmodelname. Combined with changing my relationships to read has</em>many :item<em>orders before calling has</em>many :orders/:items, :through => :item_orders, I was able to finally use methods like @item.orders and @order.items.</p>
+<p>After I had my models and relationships set up on a basic level, it was time to figure out user authentication. Up until that point, I had only used bcrypt for managing users' passwords. After hearing and reading about the popularity of Devise I decided to figure it out and incorporate it into my app. Following the setup instructions was simple; include <strong>gem 'devise'</strong> in my Gemfile, run <strong>bundle install</strong> and then <strong>rails generate devise:install</strong>. Once the initializer was installed and I configured all the Devise options, it was time to generate my Devise models. I would need authentication for both Users and Vendors. I added the following to my User and Vendor models:</p>
+<pre><code>class User &#x3C; ApplicationRecord
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :omniauth_providers => [:facebook]
+end
+</code></pre>
+<pre><code>class Vendor &#x3C; ApplicationRecord
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
+end
+</code></pre>
+<p>For the sake of simplicity, I chose not to allow a Vendor to sign in through Facebook. I may add that option during the refactoring process.</p>
+<p>The thing I had the most trouble with was following the redirects after each step that was provided by Devise. A lot of the magic provided by Devise is hidden inside files that need to be generated in order to modify them. For instance, in order to modify the sign in page, I needed to run the command <strong>rails generate devise:views</strong>. This gave me access to the views/devise directory within which are folders titled sessions and registrations that contain the view code for the sign in and sign up pages. It was here that I could add options to sign in/up as a vendor from the users sign in/up page and vice versa, a detail that I believe adds user-friendliness.</p>
+<p>Another Devise learning opportunity was provided when trying to modify the after<em>sign</em>in, after<em>sign</em>out, and after<em>sign</em>up paths for both Users and Vendors. After trying out a few different tips, I found that this logic could be encapsulated within methods defined inside the ApplicationController. I got these two methods to work:</p>
+<pre><code class="language-class" data-meta="ApplicationController < ActionController::Base">  protect_from_forgery with: :exception
+
+  def after_sign_out_path_for(resource_or_scope)
+    if resource_or_scope.is_a?(User)
+      new_user_session_path
+    elsif resource_or_scope.is_a?(Vendor)
+      new_vendor_session_path
+    else
+      root_path
+    end
+  end
+
+  def after_sign_in_path_for(resource_or_scope)
+    if resource_or_scope.is_a?(User)
+      user_path(current_user)
+    elsif resource_or_scope.is_a?(Vendor)
+      vendor_path(current_vendor)
+    end
+  end
+end
+</code></pre>
+<p>This allowed me to redirect to a page other than the root<em>path after sign</em>in and sign<em>out. The kicker, however, is that I still haven't figured out how to redirect to my desired path after sign</em>up. I assumed after reading around that this code would work:</p>
+<pre><code>def after_sign_up_path_for(resource_or_scope)
+  binding.pry
+  if resource_or_scope.is_a?(User)
+    add_user_profile_path(current_user)
+  elsif resource_or_scope.is_a?(Vendor)
+    add_vendor_profile_path(current_vendor)
+  end
+end
+</code></pre>
+<p>But it doesn't. Not yet, anyway. I compromised and changed my users/show and vendors/show views to include the link to 'add info to profile' instead of redirecting straight to this view, but I would still really like to make this work the way I originally intended. Another task for the refactoring process.</p>
+<p>Though it was slightly painful and more time-consuming than I had anticipated, I enjoyed the process of building my first Rails app and learning how to use Devise for user authentication.</p>
+<p>Thanks for reading!</p></div><div style="margin-bottom:1rem;font-family:avenir"><a href="/jquery-tic-tac-toe-with-a-rails-api">Next</a></div><div style="font-family:avenir"><a href="/sinatra-does-know-this-ditty">Prev</a></div></div></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/deliver-me-my-rails-portfolio-project";window.webpackCompilationHash="2f722c1f66d8eb1228dd";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"app":["/app-228241ff8ff730f6436a.js"],"component---src-templates-all-tags-index-js":["/component---src-templates-all-tags-index-js-cc89c025fc7f4b916cde.js"],"component---src-templates-single-tag-index-js":["/component---src-templates-single-tag-index-js-968761159b475aed954b.js"],"component---src-templates-blog-post-js":["/component---src-templates-blog-post-js-c3908f3058992ad04b93.js"],"component---src-pages-index-js":["/component---src-pages-index-js-eeb564a843ba0398d50b.js"]};/*]]>*/</script><script src="/webpack-runtime-f0e7ede3c4e5967ed1d2.js" async=""></script><script src="/app-228241ff8ff730f6436a.js" async=""></script><script src="/component---src-templates-blog-post-js-c3908f3058992ad04b93.js" async=""></script></body></html>
